@@ -8,10 +8,10 @@ Used in Java
 
 * `boolean contains(int data)`
 
-* `void preorder(StringBuffer sb)`
+* `String preorder()`
 
-* `void inorder(StringBuffer sb)`
+* `String inorder()`
 
-* `void postorder(StringBuffer sb)`
+* `String postorder()`
 
-* `void levelorder(StringBuffer sb)`
+* `String levelorder()`
