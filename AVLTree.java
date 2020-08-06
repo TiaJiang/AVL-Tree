@@ -95,24 +95,32 @@ public class AVLTree {
     }
 
     //四大遍历
-    public void preorder(StringBuffer sb) {
+    public String preorder() {
+        StringBuilder sb = new StringBuilder();
         preorder(sb, root);
+        return sb.toString();
     }
 
-    public void inorder(StringBuffer sb) {
+    public String inorder() {
+        StringBuilder sb = new StringBuilder();
         inorder(sb, root);
+        return sb.toString();
     }
 
-    public void postorder(StringBuffer sb) {
+    public String postorder() {
+        StringBuilder sb = new StringBuilder();
         postorder(sb, root);
+        return sb.toString();
     }
 
-    public void levelorder(StringBuffer sb) {
+    public String levelorder() {
+        StringBuilder sb = new StringBuilder();
         levelorder(sb, root);
+        return sb.toString();
     }
 
     //先序遍历
-    private void preorder(StringBuffer sb, AVLNode node) {
+    private void preorder(StringBuilder sb, AVLNode node) {
         if (node != null)
             sb.append(node.data + " ");
         if (node.left != null)
@@ -122,7 +130,7 @@ public class AVLTree {
     }
 
     //中序遍历
-    private void inorder(StringBuffer sb, AVLNode node) {
+    private void inorder(StringBuilder sb, AVLNode node) {
         if (node.left != null)
             inorder(sb, node.left);
         if (node != null)
@@ -132,7 +140,7 @@ public class AVLTree {
     }
 
     //后序遍历
-    private void postorder(StringBuffer sb, AVLNode node) {
+    private void postorder(StringBuilder sb, AVLNode node) {
         if (node.left != null)
             postorder(sb, node.left);
         if (node.right != null)
@@ -142,7 +150,7 @@ public class AVLTree {
     }
 
     //层序遍历
-    private void levelorder(StringBuffer sb, AVLNode node) {
+    private void levelorder(StringBuilder sb, AVLNode node) {
         if (node == null)
             return;
         LinkedList<AVLNode> list = new LinkedList<>();
@@ -151,9 +159,9 @@ public class AVLTree {
             node = list.poll();
             sb.append(node.data + " ");
             if (node.left != null)
-                list.add(node.left);
+                list.offer(node.left);
             if (node.right != null)
-                list.add(node.right);
+                list.offer(node.right);
         }
     }
 
