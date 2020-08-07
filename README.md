@@ -2,11 +2,11 @@
 Used in Java
 
 # API
-* `boolean put(int data)`
+* `boolean put(T t)`
 
-* `boolean remove(int data)`
+* `boolean remove(T t)`
 
-* `boolean contains(int data)`
+* `boolean contains(T t)`
 
 * `String preorder()`
 
@@ -15,3 +15,5 @@ Used in Java
 * `String postorder()`
 
 * `String levelorder()`
+
+note: class T extends Comparable<T>{//...}
