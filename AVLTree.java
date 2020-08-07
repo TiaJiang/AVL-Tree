@@ -9,43 +9,43 @@ import java.util.LinkedList;
  * @date 2020/7/25 11:07
  */
 
-public class AVLTree {
-    private AVLNode root;
+public class AVLTree<T extends Comparable<T>> {
+    private AVLNode<T> root;
 
-    public AVLTree(int data) {
-        this.root = new AVLNode(data);
+    public AVLTree(int T) {
+        this.root = new AVLNode(T);
     }
 
     public AVLTree() {
     }
 
-    public boolean put(int data) {
+    public boolean put(T t) {
         if (root == null) {
-            root = new AVLNode(data);
+            root = new AVLNode(t);
             return true;
         }
-        AVLNode node = getNode(data);
-        if (node.data == data || node.left != null && node.left.data == data
-                || node.right != null && node.right.data == data)
+        AVLNode node = getNode(t);
+        if (node.t.equals(t) || node.left != null && node.left.t.equals(t)
+                || node.right != null && node.right.t.equals(t))
             return false;
-        if (node.data < data)
-            node.right = new AVLNode(data, node);
-        else if (node.data > data)
-            node.left = new AVLNode(data, node);
+        if (node.t.compareTo(t) < 0)
+            node.right = new AVLNode(t, node);
+        else if (node.t.compareTo(t) > 0)
+            node.left = new AVLNode(t, node);
         selfBalance(node.parent);
         return true;
     }
 
-    public boolean remove(int data) {
+    public boolean remove(T t) {
         if (root == null)
             return false;
-        AVLNode node = getNode(data);
-        if (node.data != data)
+        AVLNode node = getNode(t);
+        if (!node.t.equals(t))
             return false;
         AVLNode parent = node.parent;
         if (node.left != null && node.right != null) {
             AVLNode replaceNode = getReplaceNode(node.left);
-            node.data = replaceNode.data;
+            node.t.equals(replaceNode.t);
             replaceNode.parent.right = replaceNode.left;
             if (replaceNode.left != null)
                 replaceNode.left.parent = replaceNode.parent;
@@ -55,7 +55,7 @@ public class AVLTree {
                 node.right.parent = null;
                 root = node.right;
             } else {
-                if (parent.data > data) {
+                if (parent.t.compareTo(t) > 0) {
                     parent.left = node.right;
                     node.right.parent = parent;
                 } else {
@@ -68,7 +68,7 @@ public class AVLTree {
                 node.left.parent = null;
                 root = node.left;
             } else {
-                if (parent.data > data) {
+                if (parent.t.compareTo(t) > 0) {
                     parent.left = node.left;
                     node.left.parent = parent;
                 } else {
@@ -81,12 +81,12 @@ public class AVLTree {
         return true;
     }
 
-    public boolean contains(int data) {
+    public boolean contains(T t) {
         AVLNode node = root;
         while (node != null) {
-            if (node.data == data)
+            if (node.t.equals(t))
                 return true;
-            else if (node.data > data)
+            else if (node.t.compareTo(t) > 0)
                 node = node.left;
             else
                 node = node.right;
@@ -122,7 +122,7 @@ public class AVLTree {
     //先序遍历
     private void preorder(StringBuilder sb, AVLNode node) {
         if (node != null)
-            sb.append(node.data + " ");
+            sb.append(node.t + " ");
         if (node.left != null)
             preorder(sb, node.left);
         if (node.right != null)
@@ -134,7 +134,7 @@ public class AVLTree {
         if (node.left != null)
             inorder(sb, node.left);
         if (node != null)
-            sb.append(node.data + " ");
+            sb.append(node.t + " ");
         if (node.right != null)
             inorder(sb, node.right);
     }
@@ -146,7 +146,7 @@ public class AVLTree {
         if (node.right != null)
             postorder(sb, node.right);
         if (node != null)
-            sb.append(node.data + " ");
+            sb.append(node.t + " ");
     }
 
     //层序遍历
@@ -157,7 +157,7 @@ public class AVLTree {
         list.add(node);
         while (!list.isEmpty()) {
             node = list.poll();
-            sb.append(node.data + " ");
+            sb.append(node.t + " ");
             if (node.left != null)
                 list.offer(node.left);
             if (node.right != null)
@@ -166,20 +166,21 @@ public class AVLTree {
     }
 
     //获取最接近data的结点
-    private AVLNode getNode(int data) {
+    private AVLNode getNode(T t) {
         AVLNode node = root;
         while (node != null) {
-            if (node.data == data)
+            if (node.t.equals(t)) {
                 return node;
-            else if (node.data > data) {
+            } else if (node.t.compareTo(t) > 0) {
                 if (node.left != null)
                     node = node.left;
                 else
                     return node;
-            } else if (node.right != null)
+            } else if (node.right != null) {
                 node = node.right;
-            else
+            } else {
                 return node;
+            }
         }
         return null;
     }
@@ -200,7 +201,7 @@ public class AVLTree {
         parent.right = leftSon;
         parent.parent = node;
         if (node.parent != null)
-            node.parent.right = node;
+            node.parent.left = node;
         if (leftSon != null)
             leftSon.parent = parent;
         if (node.parent == null)
@@ -216,7 +217,7 @@ public class AVLTree {
         parent.left = rightSon;
         parent.parent = node;
         if (node.parent != null)
-            node.parent.left = node;
+            node.parent.right = node;
         if (rightSon != null)
             rightSon.parent = parent;
         if (node.parent == null)
@@ -224,24 +225,40 @@ public class AVLTree {
     }
 
     //自我平衡
+    //上版本少了2种情况，已加
     private void selfBalance(AVLNode node) {
         while (node != null) {
             node.balance = calcBalance(node);
             //右子树多
             if (node.balance >= 2) {
-                if (node.right.right != null)
+                //左单旋
+                if (node.left == null && node.right.right != null) {
                     leftRotate(node.right);
-                else {
+                } else if (node.left != null && node.right.right.right != null) {
+                    leftRotate(node.right);
+                }
+                //右左双旋
+                else if (node.left == null && node.right.right == null) {
+                    rightRotate(node.right.left);
+                    leftRotate(node.right);
+                } else if (node.left != null && node.right.right.right == null) {
                     rightRotate(node.right.left);
                     leftRotate(node.right);
                 }
             }
             //左子树多
             else if (node.balance <= -2) {
-                System.out.println(1);
-                if (node.right.right != null)
-                    leftRotate(node.left);
-                else {
+                //右单旋
+                if (node.right == null && node.left.left != null) {
+                    rightRotate(node.left);
+                } else if (node.right != null && node.left.left.left != null) {
+                    rightRotate(node.left);
+                }
+                //左右双旋
+                else if (node.right == null && node.left.left == null) {
+                    leftRotate(node.left.right);
+                    rightRotate(node.left);
+                } else if (node.right !=null && node.left.left.left == null) {
                     leftRotate(node.left.right);
                     rightRotate(node.left);
                 }
@@ -269,8 +286,8 @@ public class AVLTree {
         return 1 + (leftNum > rightNum ? leftNum : rightNum);
     }
 
-    private class AVLNode {
-        int data;
+    private class AVLNode<T extends Comparable<T>> {
+        T t;
 
         int balance;
 
@@ -280,20 +297,25 @@ public class AVLTree {
 
         AVLNode parent;
 
-        AVLNode(int data) {
-            this.data = data;
+        AVLNode(T t) {
+            this.t = t;
             this.balance = 0;
             this.left = null;
             this.right = null;
             this.parent = null;
         }
 
-        AVLNode(int data, AVLNode parent) {
-            this.data = data;
+        AVLNode(T t, AVLNode parent) {
+            this.t = t;
             this.balance = 0;
             this.left = null;
             this.right = null;
             this.parent = parent;
+        }
+
+        @Override
+        public String toString() {
+            return t.toString();
         }
     }
 }
