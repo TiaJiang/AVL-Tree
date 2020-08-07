@@ -1,6 +1,10 @@
 # AVL-Tree
 Used in Java
 
+* `AVLTree<T> tree = new AVLTree<>(T t);`
+
+* `AVLTree<T> tree = new AVLTree<>();`
+
 # API
 * `boolean put(T t)`
 
@@ -16,4 +20,5 @@ Used in Java
 
 * `String levelorder()`
 
-note: class T extends Comparable<T>{//...}
+# Note
+`class T extends Comparable<T>{//...}`
